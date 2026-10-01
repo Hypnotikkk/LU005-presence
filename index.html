@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b3658" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Présences" />
+    <meta name="description" content="Gestion locale des présences du groupe." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+    <link rel="icon" href="./assets/icon-192.png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Gestion des présences</title>
+  </head>
+  <body>
+    <section class="auth-shell" id="login-view" aria-labelledby="login-title">
+      <div class="auth-card">
+        <img class="auth-logo" src="./assets/icon-192.png" alt="" width="76" height="76" />
+        <p class="eyebrow">Espace responsable</p>
+        <h1 id="login-title">Gestion des présences</h1>
+        <p class="auth-copy">Entrez le mot de passe administrateur pour ouvrir l’application sur cet appareil.</p>
+
+        <form id="login-form" novalidate>
+          <label class="field" for="admin-password">
+            <span>Mot de passe</span>
+            <span class="password-field">
+              <input id="admin-password" name="password" type="password" autocomplete="current-password" required />
+              <button class="icon-button" id="toggle-password" type="button" aria-label="Afficher le mot de passe">Afficher</button>
+            </span>
+          </label>
+          <p class="form-error" id="login-error" role="alert" aria-live="polite"></p>
+          <button class="button primary wide" type="submit">Se connecter</button>
+        </form>
+
+        <div class="privacy-note">
+          <span aria-hidden="true">◆</span>
+          Les présences sont enregistrées uniquement dans ce navigateur.
+        </div>
+      </div>
+    </section>
+
+    <div class="app-shell" id="app" hidden>
+      <header class="topbar">
+        <a class="brand" href="#presences" data-view-link="attendance" aria-label="Gestion des présences — Accueil">
+          <img src="./assets/icon-192.png" alt="" width="42" height="42" />
+          <span><strong>Gestion des présences</strong><small>Données locales</small></span>
+        </a>
+
+        <nav class="desktop-nav" aria-label="Navigation principale">
+          <button class="nav-button active" type="button" data-view="attendance">Présences</button>
+          <button class="nav-button" type="button" data-view="annual">Suivi annuel</button>
+          <button class="nav-button" type="button" data-view="members">Membres</button>
+        </nav>
+
+        <div class="top-actions">
+          <button class="button quiet desktop-only" id="export-button" type="button">Sauvegarder</button>
+          <button class="button quiet" id="logout-button" type="button">Déconnexion</button>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <section class="view active" id="attendance-view" aria-labelledby="attendance-title">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Feuille de séance</p>
+              <h1 id="attendance-title">Présences</h1>
+              <p>Choisissez la date puis indiquez la présence de chaque membre.</p>
+            </div>
+            <label class="date-control" for="meeting-date">
+              <span>Date de la séance</span>
+              <input id="meeting-date" type="date" />
+            </label>
+          </div>
+
+          <div class="summary-grid" id="attendance-summary" aria-label="Résumé de la séance"></div>
+
+          <div class="action-bar">
+            <button class="button primary" id="all-present-button" type="button">✓ Tous présents</button>
+            <button class="button" id="unknown-absent-button" type="button">× Non saisis absents</button>
+            <button class="button danger-quiet" id="clear-meeting-button" type="button">Réinitialiser la séance</button>
+          </div>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <div><h2>Membres</h2><span id="attendance-member-count"></span></div>
+              <label class="search-field">
+                <span class="sr-only">Rechercher un membre</span>
+                <input id="attendance-search" type="search" placeholder="Rechercher" />
+              </label>
+            </div>
+            <div class="member-list" id="attendance-list"></div>
+          </section>
+        </section>
+
+        <section class="view" id="annual-view" aria-labelledby="annual-title" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Vue d’ensemble</p>
+              <h1 id="annual-title">Suivi annuel</h1>
+              <p>Consultez les statistiques de présence du groupe.</p>
+            </div>
+            <label class="select-control" for="academic-year">
+              <span>Année</span>
+              <select id="academic-year"></select>
+            </label>
+          </div>
+
+          <div id="annual-content"></div>
+        </section>
+
+        <section class="view" id="members-view" aria-labelledby="members-title" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Administration</p>
+              <h1 id="members-title">Membres</h1>
+              <p>Ajoutez, modifiez ou archivez les membres du groupe.</p>
+            </div>
+            <button class="button primary" id="add-member-button" type="button">+ Ajouter un membre</button>
+          </div>
+
+          <div class="members-toolbar">
+            <label class="search-field grow">
+              <span class="sr-only">Rechercher un membre</span>
+              <input id="members-search" type="search" placeholder="Rechercher un membre" />
+            </label>
+            <button class="button" id="import-button" type="button">Importer</button>
+            <button class="button" id="members-export-button" type="button">Sauvegarder</button>
+          </div>
+
+          <div id="members-content"></div>
+
+          <aside class="privacy-card">
+            <div class="privacy-icon" aria-hidden="true">◆</div>
+            <div><strong>Stockage local</strong><p>Aucune donnée de présence n’est envoyée vers GitHub ou un serveur.</p></div>
+          </aside>
+        </section>
+      </main>
+
+      <nav class="mobile-nav" aria-label="Navigation principale">
+        <button class="mobile-nav-button active" type="button" data-view="attendance"><span>✓</span>Présences</button>
+        <button class="mobile-nav-button" type="button" data-view="annual"><span>▥</span>Suivi annuel</button>
+        <button class="mobile-nav-button" type="button" data-view="members"><span>●●</span>Membres</button>
+      </nav>
+    </div>
+
+    <dialog id="member-dialog">
+      <form id="member-form" method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">Membre</p><h2 id="member-dialog-title">Ajouter un membre</h2></div><button class="icon-close" id="close-member-dialog" type="button" aria-label="Fermer">×</button></div>
+        <input id="member-id" type="hidden" />
+        <label class="field" for="member-first-name"><span>Prénom</span><input id="member-first-name" type="text" autocomplete="given-name" required /></label>
+        <label class="field" for="member-last-name"><span>Nom</span><input id="member-last-name" type="text" autocomplete="family-name" required /></label>
+        <label class="field" for="member-group"><span>Groupe ou patrouille <em>facultatif</em></span><input id="member-group" type="text" /></label>
+        <div class="dialog-actions"><button class="button" id="cancel-member-button" type="button">Annuler</button><button class="button primary" type="submit">Enregistrer</button></div>
+      </form>
+    </dialog>
+
+    <input id="import-input" type="file" accept="application/json,.json" hidden />
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
